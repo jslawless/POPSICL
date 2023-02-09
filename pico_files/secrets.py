@@ -1,0 +1,2 @@
+SSID = "eduroam"
+PASSWORD = ""
