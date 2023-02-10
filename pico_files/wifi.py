@@ -1,11 +1,19 @@
 import network
 import secrets
 import time
+import urequests
+
 
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
-wlan.connect(ssid='eduroam', auth=(wlan.wpa2_ent, 'dstewa30', 'Blue082004!!'))
+wlan.connect(ssid='ut-open')
 print(wlan.isconnected())
 
-SSID = "eduroam"
+SSID = "ut-open"
 PASSWORD = ""
+
+
+astronauts = urequests.get("http://api.open-notify.org/astros.json").json()
+number = astronauts['number']
+for i in range(number):
+   print(astronauts['people'][i]['name'])
