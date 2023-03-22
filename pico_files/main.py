@@ -38,7 +38,9 @@ def connect_wifi():
     wlan.active(True)
     wlan.connect(ssid)
     mac = ubinascii.hexlify(network.WLAN().config('mac'),':').decode()
+    ip = wlan.ifconfig()[0]
     print("The MAC address of this device is", mac)
+    print("The IP address of this device is", ip)
 
 
     if wlan.isconnected():
