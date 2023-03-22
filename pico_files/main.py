@@ -3,6 +3,7 @@ import network
 import ubinascii
 import utime
 import gc
+import sys
 import urequests
 from dht20 import DHT20
 
@@ -11,6 +12,9 @@ ssid = 'ut-open'
 CHECK_TIME = 5 # Set the interval (in seconds) at which the device will check if it is connected to the network
 MEASURE_TIME = 2 # Sets the interval (in seconds) at which the device will post measuremnts to the database
 ATTEMPT_TIME = 5 # Sets the interval (in seconds) at which the device will attempt to connect to the network in the condition if unsuccessful connection
+
+# Set the pi location name
+location = "SERF_212"
 
 # Defining pins 
 i2c0_sda = Pin(8)
@@ -54,17 +58,17 @@ def connect_wifi():
 
     # Try soft reset
     print("Trying soft reset")
-    machine.reset()
+    sys.exit()
 
 def check_measurements():
     while True:
         measurements = dht20.measurements
-        data = f"Temperature: {measurements['t']} °C, humidity: {measurements['rh']} %RH"
+        data = f"climate,location={location} Temperature: {measurements['t']} °C,humidity: {measurements['rh']} %RH"
         try:
             led.on()
             response = urequests.post('http://serf212a.desktop.utk.edu:8086/write', auth=('mydb', 'db'), data=data)
             print(response)
-            print(f"Temperature: {measurements['t']} °C, humidity: {measurements['rh']} %RH")
+            print(data)
             gc.collect()
             led.off()
             utime.sleep(MEASURE_TIME)
