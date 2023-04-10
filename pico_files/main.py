@@ -4,6 +4,7 @@ import ubinascii
 import socket
 import utime
 import gc
+import sys
 import urequests
 from dht20 import DHT20
 
@@ -20,13 +21,6 @@ i2c0 = I2C(0, sda=i2c0_sda, scl=i2c0_scl)
 dht20 = DHT20(0x38, i2c0)
 led = Pin("LED", Pin.OUT)
 
-headers = {
-    'Content-Type': 'application/x-www-form-urlencoded',
-}
-params = {
-    'db': 'mydb',
-}
-data = 'cpu_load_short,host=server02,region=us-east value=0.3'
 def main():
     
     connect_wifi()
@@ -42,6 +36,7 @@ def connect_wifi():
     wlan.active(True)
     wlan.connect(ssid)
     mac = ubinascii.hexlify(network.WLAN().config('mac'),':').decode()
+    ip = wlan.ifconfig()[0]
     print("The MAC address of this device is", mac)
         
     if wlan.isconnected():
@@ -66,13 +61,13 @@ def connect_wifi():
 
     # Try soft reset
     print("Trying soft reset")
-    machine.reset()
+    sys.exit()
 
 def check_measurements():
     while True:
-        measurements = dht20.measurements
-        dataT = f"measurement,host=popsicl_01 temp={measurements['t']}"
-        dataH = f"measurement,host=popsicl_01 humidity={measurements['rh']}"
+        measurements = dht20.measurements     
+        dataT = f"measurement,host={mac} temp={measurements['t']}"
+        dataH = f"measurement,host={mac} humidity={measurements['rh']}"
         
         try:
             led.on()
