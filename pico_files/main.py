@@ -24,13 +24,6 @@ i2c0 = I2C(0, sda=i2c0_sda, scl=i2c0_scl)
 dht20 = DHT20(0x38, i2c0)
 led = Pin("LED", Pin.OUT)
 
-headers = {
-    'Content-Type': 'application/x-www-form-urlencoded',
-}
-params = {
-    'db': 'mydb',
-}
-data = 'cpu_load_short,host=server02,region=us-east value=0.3'
 def main():
     
     connect_wifi()
@@ -48,13 +41,7 @@ def connect_wifi():
     mac = ubinascii.hexlify(network.WLAN().config('mac'),':').decode()
     ip = wlan.ifconfig()[0]
     print("The MAC address of this device is", mac)
-<<<<<<< HEAD
-    print("The IP address of this device is", ip)
-
-
-=======
         
->>>>>>> 9ae659984778eb401e247014f72575d93aa438cb
     if wlan.isconnected():
         print("Already connected to Wi-Fi")
         ip = wlan.ifconfig()[0]
@@ -81,15 +68,7 @@ def connect_wifi():
 
 def check_measurements():
     while True:
-        measurements = dht20.measurements
-<<<<<<< HEAD
-        data = f"climate,location={location} Temperature: {measurements['t']} °C,humidity: {measurements['rh']} %RH"
-        try:
-            led.on()
-            response = urequests.post('http://serf212a.desktop.utk.edu:8086/write', auth=('mydb', 'db'), data=data)
-            print(response)
-            print(data)
-=======
+        measurements = dht20.measurements     
         dataT = f"measurement,host=popsicl_01 temp={measurements['t']}"
         dataH = f"measurement,host=popsicl_01 humidity={measurements['rh']}"
         
@@ -100,7 +79,6 @@ def check_measurements():
             responseH = urequests.post('http://serf212a.desktop.utk.edu:8086/write?db=mydb',auth=('popsicl_test', 'test'),data=dataH)
             print(responseH.status_code)
             print(f"Temperature: {measurements['t']} °C, humidity: {measurements['rh']} %RH")
->>>>>>> 9ae659984778eb401e247014f72575d93aa438cb
             gc.collect()
             led.off()
             utime.sleep(MEASURE_TIME)
