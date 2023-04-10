@@ -14,9 +14,6 @@ CHECK_TIME = 5 # Set the interval (in seconds) at which the device will check if
 MEASURE_TIME = 2 # Sets the interval (in seconds) at which the device will post measuremnts to the database
 ATTEMPT_TIME = 5 # Sets the interval (in seconds) at which the device will attempt to connect to the network in the condition if unsuccessful connection
 
-# Set the pi location name
-location = "SERF_212"
-
 # Defining pins 
 i2c0_sda = Pin(8)
 i2c0_scl = Pin(9)
@@ -69,8 +66,8 @@ def connect_wifi():
 def check_measurements():
     while True:
         measurements = dht20.measurements     
-        dataT = f"measurement,host=popsicl_01 temp={measurements['t']}"
-        dataH = f"measurement,host=popsicl_01 humidity={measurements['rh']}"
+        dataT = f"measurement,host={mac} temp={measurements['t']}"
+        dataH = f"measurement,host={mac} humidity={measurements['rh']}"
         
         try:
             led.on()
