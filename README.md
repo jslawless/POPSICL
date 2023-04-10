@@ -1,2 +1,2 @@
 # POPSICL
-POPSICL - Probing Over the Physics' Institutions Systematic Cooling Liability
+POPSICL - Proactive Optimization of Physics Space Integrated Climate Logging
