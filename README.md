@@ -135,7 +135,7 @@ if __name__ == '__main__':
     main()
 ```
 
-##Part 2: Setting up the Database
+## Part 2: Setting up the Database
 
 Follow the instructions on [this website](https://hub.docker.com/r/philhawthorne/docker-influxdb-grafana) in order to set the docker image. This will run Chronograf, Influxdb and Grafana in a docker image on your machine. To stop the image, run
 '''
