@@ -138,21 +138,21 @@ if __name__ == '__main__':
 ## Part 2: Setting up the Database
 
 Follow the instructions on [this website](https://hub.docker.com/r/philhawthorne/docker-influxdb-grafana) in order to set the docker image. This will run Chronograf, Influxdb and Grafana in a docker image on your machine. To stop the image, run
-'''
+```bash
 docker stop docker-influxdb-grafana
-'''
+```
 and to start it run
-'''
+```
 docker start docker-influxdb-grafana
-'''
+```
 To create a database in influxdb, you'll need to communicate through the port you chose for it to run on through the use of the curl command. Here's how to make a new database with the name 'mydb':
-'''
+```
 curl -i -XPOST http://localhost:8086/query --data-urlencode "q=CREATE DATABASE mydb"
-'''
+```
 Now data from your popsicl can be posted to mydb through that port.
 
 If you want to enable security, you'll need to create an admin user of the database. Then you'll need to ssh into the docker image using 
-'''
+```
 docker exec -it docker-influxdb-grafana bash
-'''
+```
 and follow the instructions [here](https://docs.influxdata.com/influxdb/v1.8/administration/authentication_and_authorization/) to enable authentication.
