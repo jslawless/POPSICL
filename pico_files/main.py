@@ -6,6 +6,7 @@ import utime
 import gc
 import sys
 import urequests
+import hashlib
 from dht20 import DHT20
 
 MAX_ATTEMPTS = 5 # Sets the maximum amount of attempts the device will make before it resets given that it is not able to connect to the network
@@ -23,9 +24,9 @@ led = Pin("LED", Pin.OUT)
 
 def main():
     
-    connect_wifi()
+    mac,password = connect_wifi()
     
-    check_measurements()
+    check_measurements(mac,password)
              
 #-------------------------------------------------------------------------------------------#
     #Function Definitions: Begin
@@ -35,14 +36,17 @@ def connect_wifi():
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
     wlan.connect(ssid)
-    mac = ubinascii.hexlify(network.WLAN().config('mac'),'').decode()
-    print("The MAC address of this device is", mac)
+    mac = ubinascii.hexlify(network.WLAN().config('mac'),':').decode()
+    mac = mac.replace(":","")
+    password = ubinascii.hexlify(hashlib.sha256(mac.encode("utf-8")).digest())
+    print(f"The MAC address of this device is {mac}")
+    print(f"The authentication header password for this device is {password}")
         
     if wlan.isconnected():
         print("Already connected to Wi-Fi")
         ip = wlan.ifconfig()[0]
         print("The IP address of this device is", ip)
-        return True
+        return mac,password
     
     else:
         for retry in range(MAX_ATTEMPTS):
@@ -54,7 +58,7 @@ def connect_wifi():
                 print("Successfully connected to Wi-Fi")
                 ip = wlan.ifconfig()[0]
                 print("The IP address of this device is", ip)
-                return True
+                return mac,password
 
     print("Failed to connect to Wi-Fi after", MAX_ATTEMPTS, "attempts")
 
@@ -62,7 +66,7 @@ def connect_wifi():
     print("Trying soft reset")
     sys.exit()
 
-def check_measurements():
+def check_measurements(mac,password):
     while True:
         measurements = dht20.measurements     
         dataT = f"measurement,host={mac} temp={measurements['t']}"
@@ -70,9 +74,9 @@ def check_measurements():
         
         try:
             led.on()
-            responseT = urequests.post('http://serf212a.desktop.utk.edu:8086/write?db=mydb',auth=('popsicl_test', 'test'),data=dataT)
+            responseT = urequests.post('http://serf212a.desktop.utk.edu:8086/write?db=mydb',auth=(mac, password),data=dataT)
             print(responseT.status_code)
-            responseH = urequests.post('http://serf212a.desktop.utk.edu:8086/write?db=mydb',auth=('popsicl_test', 'test'),data=dataH)
+            responseH = urequests.post('http://serf212a.desktop.utk.edu:8086/write?db=mydb',auth=(mac, password),data=dataH)
             print(responseH.status_code)
             print(f"Temperature: {measurements['t']} °C, humidity: {measurements['rh']} %RH")
             gc.collect()
