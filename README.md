@@ -65,7 +65,7 @@ def main():
     check_measurements(mac,password)
 ```
 
-Then, let's create a connect_wifi_() function. You will use the network library of micropython and for most of what we’ll do it will come from network.WLAN(network.STA_IF), so we can just set it to a variable like “wlan = network.WLAN(network.STA_IF)”. Use “wlan.active(True)” to turn on wifi functionality, then “wlan.connect("ssid name")” to connect the Pico to your router. This is utopen in our case, and the pico needs to be registered through NetReg beforehand for it to connect. Then we get the mac address of the pico (this will be useful as a unique identifier later) and remove the colons from the mac address to make it simply a string of hex numbers. This mac address string will serve as the username for the pico when we connect to the database. Then, we generate a sha256 string from the mac address to serve as the password for the pico when we connect to the databse. We print the mac address and password for reference.
+Then, let's create a connect_wifi_() function. You will use the network library of micropython and for most of what we’ll do it will come from network.WLAN(network.STA_IF), so we can just set it to a variable like “wlan = network.WLAN(network.STA_IF)”. Use “wlan.active(True)” to turn on wifi functionality, then “wlan.connect("ssid name")” to connect the Pico to your router. This is utopen in our case, and the pico needs to be registered through NetReg beforehand for it to connect. Then we get the mac address of the pico (this will be useful as a unique identifier later) and remove the colons from the mac address to make it simply a string of hex numbers. This mac address string will serve as the username for the pico when we connect to the database. Then, we generate a sha256 binary number from the mac address, and convert it to a string to serve as the password for the pico when we connect to the databse. We print the mac address and password for reference.
 ```python
 def connect_wifi():
     
@@ -75,6 +75,7 @@ def connect_wifi():
     mac = ubinascii.hexlify(network.WLAN().config('mac'),':').decode()
     mac = mac.replace(":","")
     password = ubinascii.hexlify(hashlib.sha256(mac.encode("utf-8")).digest())
+    password = password.decode("UTF-8")
     print(f"The MAC address of this device is {mac}")
     print(f"The authentication header password for this device is {password}")
 ```
