@@ -39,6 +39,7 @@ def connect_wifi():
     mac = ubinascii.hexlify(network.WLAN().config('mac'),':').decode()
     mac = mac.replace(":","")
     password = ubinascii.hexlify(hashlib.sha256(mac.encode("utf-8")).digest())
+    password = password.decode("UTF-8")
     print(f"The MAC address of this device is {mac}")
     print(f"The authentication header password for this device is {password}")
         
