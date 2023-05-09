@@ -74,9 +74,9 @@ def check_measurements(mac,password):
         
         try:
             led.on()
-            responseT = urequests.post('http://serf212a.desktop.utk.edu:8086/write?db=mydb',auth=(mac, password),data=dataT)
+            responseT = urequests.post('http://serf212a.desktop.utk.edu:8086/write?db=nielsen',auth=(mac, password),data=dataT)
             print(responseT.status_code)
-            responseH = urequests.post('http://serf212a.desktop.utk.edu:8086/write?db=mydb',auth=(mac, password),data=dataH)
+            responseH = urequests.post('http://serf212a.desktop.utk.edu:8086/write?db=nielsen',auth=(mac, password),data=dataH)
             print(responseH.status_code)
             print(f"Temperature: {measurements['t']} °C, humidity: {measurements['rh']} %RH")
             gc.collect()
