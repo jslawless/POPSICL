@@ -33,6 +33,7 @@ import utime
 import gc
 import sys
 import urequests
+import hashlib
 from dht20 import DHT20
 ```
 
@@ -41,7 +42,7 @@ Next, we set some variables to be used later in the code, they'll make more sens
 MAX_ATTEMPTS = 5 # Sets the maximum amount of attempts the device will make before it resets given that it is not able to connect to the network
 ssid='ut-open' 
 CHECK_TIME = 5 # Set the interval (in seconds) at which the device will check if it is connected to the network
-MEASURE_TIME = 2 # Sets the interval (in seconds) at which the device will post measuremnts to the database
+MEASURE_TIME = 60 # Sets the interval (in seconds) at which the device will post measuremnts to the database
 ATTEMPT_TIME = 5 # Sets the interval (in seconds) at which the device will attempt to connect to the network in the condition if unsuccessful connection
 ```
 
@@ -55,13 +56,27 @@ dht20 = DHT20(0x38, i2c0)
 led = Pin("LED", Pin.OUT)
 ```
 
-After those are defined, create a connect_wifi_() function. You will use the network library of micropython and for most of what we’ll do it will come from network.WLAN(network.STA_IF), so we can just set it to a variable like “wlan = network.WLAN(network.STA_IF)”. Use “wlan.active(True)” to turn on wifi functionality, then “wlan.connect("ssid name")” to connect the Pico to your router. This is utopen in our case, and the pico needs to be registered through NetReg beforehand for it to connect. Then get the mac address of the pico (this will be useful as a unique identifier later) and print it. 
+After those are defined, let's go ahead and define our main function which will call the two functions that make up this program.
 ```python
-wlan = network.WLAN(network.STA_IF)
-wlan.active(True)
-wlan.connect(ssid)
-mac = ubinascii.hexlify(network.WLAN().config('mac'),':').decode()
-print("The MAC address of this device is", mac)
+def main():
+    
+    mac,password = connect_wifi()
+    
+    check_measurements(mac,password)
+```
+
+Then, let's create a connect_wifi_() function. You will use the network library of micropython and for most of what we’ll do it will come from network.WLAN(network.STA_IF), so we can just set it to a variable like “wlan = network.WLAN(network.STA_IF)”. Use “wlan.active(True)” to turn on wifi functionality, then “wlan.connect("ssid name")” to connect the Pico to your router. This is utopen in our case, and the pico needs to be registered through NetReg beforehand for it to connect. Then we get the mac address of the pico (this will be useful as a unique identifier later) and print
+```python
+def conne
+    
+    wlan = network.WLAN(network.STA_IF)
+    wlan.active(True)
+    wlan.connect(ssid)
+    mac = ubinascii.hexlify(network.WLAN().config('mac'),':').decode()
+    mac = mac.replace(":","")
+    password = ubinascii.hexlify(hashlib.sha256(mac.encode("utf-8")).digest())
+    print(f"The MAC address of this device is {mac}")
+    print(f"The authentication header password for this device is {password}")
 ```
 
 Then we're going to want to ensure that the Pico successfully connected to the Wi-Fi, and if it is, we will print a state so we know it was successful and we also get the ip address of the Pico.
