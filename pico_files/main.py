@@ -12,7 +12,7 @@ from dht20 import DHT20
 MAX_ATTEMPTS = 5 # Sets the maximum amount of attempts the device will make before it resets given that it is not able to connect to the network
 ssid='ut-open' 
 CHECK_TIME = 5 # Set the interval (in seconds) at which the device will check if it is connected to the network
-MEASURE_TIME = 2 # Sets the interval (in seconds) at which the device will post measuremnts to the database
+MEASURE_TIME = 60 # Sets the interval (in seconds) at which the device will post measuremnts to the database
 ATTEMPT_TIME = 5 # Sets the interval (in seconds) at which the device will attempt to connect to the network in the condition if unsuccessful connection
 
 # Defining pins 
