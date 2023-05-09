@@ -56,7 +56,7 @@ dht20 = DHT20(0x38, i2c0)
 led = Pin("LED", Pin.OUT)
 ```
 
-After those are defined, let's go ahead and define our main function which will call the two functions that make up this program.
+After those are defined, let's go ahead and define our main function which will call the two functions that make up this program. connect_wifi() will return the username and password for the pico, which are then plugged in as parameters into the check_measurements() function. This will make more sense as you continue reading.
 ```python
 def main():
     
@@ -65,9 +65,9 @@ def main():
     check_measurements(mac,password)
 ```
 
-Then, let's create a connect_wifi_() function. You will use the network library of micropython and for most of what we’ll do it will come from network.WLAN(network.STA_IF), so we can just set it to a variable like “wlan = network.WLAN(network.STA_IF)”. Use “wlan.active(True)” to turn on wifi functionality, then “wlan.connect("ssid name")” to connect the Pico to your router. This is utopen in our case, and the pico needs to be registered through NetReg beforehand for it to connect. Then we get the mac address of the pico (this will be useful as a unique identifier later) and print
+Then, let's create a connect_wifi_() function. You will use the network library of micropython and for most of what we’ll do it will come from network.WLAN(network.STA_IF), so we can just set it to a variable like “wlan = network.WLAN(network.STA_IF)”. Use “wlan.active(True)” to turn on wifi functionality, then “wlan.connect("ssid name")” to connect the Pico to your router. This is utopen in our case, and the pico needs to be registered through NetReg beforehand for it to connect. Then we get the mac address of the pico (this will be useful as a unique identifier later) and remove the colons from the mac address to make it simply a string of hex numbers. This mac address string will serve as the username for the pico when we connect to the database. Then, we generate a sha256 string from the mac address to serve as the password for the pico when we connect to the databse. We print the mac address and password for reference.
 ```python
-def conne
+def connect_wifi():
     
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
@@ -88,7 +88,7 @@ if wlan.isconnected():
         return True
 ```
 
-Now if the above if statement is false, we will then try to reconnect to the wifi a number of times before doing a soft reset of the pico as a last resort. This is where the MAX_ATTEMPTS and ATTEMPT_TIME variables comes into play, as part of the for loop to reconnect. After wlan.connect() is run again, we use another if statement to see if the connection was successful just as we did above, but if it doesn't successfully connect then we go back to the top of the for loop and try again.
+Now if the above if statement is false, we will then try to reconnect to the wifi a number of times before doing a soft reset of the pico as a last resort. This is where the MAX_ATTEMPTS and ATTEMPT_TIME variables comes into play, as part of the for loop to reconnect. After wlan.connect() is run again, we use another if statement to see if the connection was successful just as we did above. If it connects then we will return the mac address and password to be used in check_measurements(). If it doesn't successfully connect then we go back to the top of the for loop and try again.
 ```python
 else:
     for retry in range(MAX_ATTEMPTS):
@@ -100,7 +100,7 @@ else:
             print("Successfully connected to Wi-Fi")
             ip = wlan.ifconfig()[0]
             print("The IP address of this device is", ip)
-            return True
+            return mac,password
 ```
 
 If the Pico fails to connect for MAX_ATTEMPTS number of attempts, then it will go into a soft reset and the program will start from the beginning afterwards.
@@ -125,9 +125,9 @@ Once we set the strings with the recorded data values for that instant, we are g
 ```python
 try:
             led.on()
-            responseT = urequests.post('http://serf212a.desktop.utk.edu:8086/write?db=mydb',auth=('popsicl_test', 'test'),data=dataT)
+            responseT = urequests.post('http://serf212a.desktop.utk.edu:8086/write?db=mydb',auth=(mac, password),data=dataT)
             print(responseT.status_code)
-            responseH = urequests.post('http://serf212a.desktop.utk.edu:8086/write?db=mydb',auth=('popsicl_test', 'test'),data=dataH)
+            responseH = urequests.post('http://serf212a.desktop.utk.edu:8086/write?db=mydb',auth=(mac, password),data=dataH)
             print(responseH.status_code)
             print(f"Temperature: {measurements['t']} °C, humidity: {measurements['rh']} %RH")
             gc.collect()
