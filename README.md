@@ -50,7 +50,21 @@ In the inFluxDB web interface, go to the InFluxDB Admin menu > Users. Add a user
 
 ## Notes for how the database was set up and how to restart it if needed
 
-Follow the instructions on [this website](https://hub.docker.com/r/philhawthorne/docker-influxdb-grafana) in order to set the docker image. This will run Chronograf, Influxdb and Grafana in a docker image on your machine. To stop the image, run
+Follow the instructions on [this website](https://hub.docker.com/r/philhawthorne/docker-influxdb-grafana) in order to set the docker image. This will run Chronograf, Influxdb and Grafana in a docker image on your machine. 
+
+```
+docker run -d \
+  --name docker-influxdb-grafana \
+  -p 3003:3003 \
+  -p 3004:8083 \
+  -p 8086:8086 \
+  -v /userdata/popsicl_db/influxdb/:/var/lib/influxdb \
+  -v /userdata/popsicl_db/grafana/:/var/lib/grafana \
+  -v /userdata/popsicl_db/chronograf/:/root/ \
+  philhawthorne/docker-influxdb-grafana:latest
+```
+
+To stop the image, run
 ```bash
 docker stop docker-influxdb-grafana
 ```
