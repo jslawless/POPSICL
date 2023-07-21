@@ -64,6 +64,8 @@ docker run -d \
   philhawthorne/docker-influxdb-grafana:latest
 ```
 
+(Used to use `philhawthorne/docker-influxdb-grafana:latest`. Switched to the `edge` tag to get a newer version of the software to allow for passwords.)
+
 To stop the image, run
 ```bash
 docker stop docker-influxdb-grafana
