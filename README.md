@@ -85,3 +85,14 @@ If you want to enable security, you'll need to create an admin user of the datab
 docker exec -it docker-influxdb-grafana bash
 ```
 and follow the instructions [here](https://docs.influxdata.com/influxdb/v1.8/administration/authentication_and_authorization/) to enable authentication.
+
+
+When starting up a fresh docker container, you need to go into the docker image (see above) and run
+
+```
+cp supervisord.conf.bkup /etc/supervisor/conf.d/supervisord.conf
+cp influxdb.conf /etc/influxdb/influxdb.conf
+supervisorctl reread
+supervisorctl update
+supervisorctl restart influxdb
+```
